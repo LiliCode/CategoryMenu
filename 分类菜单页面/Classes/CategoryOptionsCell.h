@@ -12,7 +12,7 @@
 @interface CategoryOptionsCell : UITableViewCell
 
 @property (strong , nonatomic) MenuOptionsItem *optionsItem;
-
+@property (strong , nonatomic) UIColor *hColor;
 
 
 @end

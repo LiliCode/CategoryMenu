@@ -9,10 +9,13 @@
 #import "CategoryBaseController.h"
 #import "CategoryOptionsCell.h"
 
-@interface CategoryBaseController ()<UITableViewDelegate, UITableViewDataSource>
+@interface CategoryBaseController ()
 @property (strong , nonatomic) UITableView *menuTableView;
 @property (strong , nonatomic) UIView *baseContentView;
 @property (strong , nonatomic) NSArray *menuList;
+@property (strong , nonatomic) UIColor *optionsHColor;
+@property (strong , nonatomic) MenuOptionsItem *lastSelectedItem;
+@property (strong , nonatomic) NSIndexPath *lastSelectedIndexPath;
 
 @end
 
@@ -26,7 +29,7 @@
     [self.view addSubview:self.menuTableView];  //添加菜单列表视图
     self.menuTableView.delegate = self;
     self.menuTableView.dataSource = self;
-    [self.view addSubview:self.baseContentView];//添加内天视图
+    [self.view addSubview:self.baseContentView];//添加内容视图
     self.baseContentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.baseContentView.backgroundColor = [UIColor grayColor];
     //注册菜单Cell
@@ -37,8 +40,10 @@
 {
     if (!_menuTableView)
     {
-        _menuTableView = [[UITableView alloc] init];
-        _menuTableView.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width * 1.0f/3.0f, [UIScreen mainScreen].bounds.size.height);
+        _menuTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width * 1.0f/3.0f, [UIScreen mainScreen].bounds.size.height) style:UITableViewStylePlain];
+        _menuTableView.tag = UITableViewTag_menu;
+        _menuTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        _menuTableView.rowHeight = 50.0f;
     }
     
     return _menuTableView;
@@ -62,17 +67,25 @@
     CGRect bounds = self.menuTableView.bounds;
     bounds.size.width = width;
     self.menuTableView.bounds = bounds;
-    [self.view setNeedsLayout];
 }
 
 - (void)setMenuData:(NSArray *)list
 {
     self.menuList = [list copy];
+    //设置第一个为选中
+    self.lastSelectedItem = list.firstObject;
+    self.lastSelectedItem.selected = YES;
 }
 
 - (void)setContentView:(UIView *)contentView
 {
     [self.baseContentView addSubview:contentView];
+    contentView.frame = self.baseContentView.bounds;
+}
+
+- (void)setOptionsHighlightedColor:(UIColor *)color
+{
+    self.optionsHColor = color;
 }
 
 #pragma mark - UITableViewDataSource
@@ -91,6 +104,8 @@
 {
     CategoryOptionsCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MenuCell" forIndexPath:indexPath];
     
+    cell.hColor = self.optionsHColor;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.optionsItem = [self.menuList objectAtIndex:indexPath.row];
     
     return cell;
@@ -100,9 +115,26 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    //如果选中和上一次为同一个，则不处理选中操作
+    if ([self.lastSelectedIndexPath isEqual:indexPath])
+    {
+        return;
+    }
     
+    //设置选中高亮
+    self.lastSelectedItem.selected = NO;
+    self.lastSelectedItem = [self.menuList objectAtIndex:indexPath.row];
+    self.lastSelectedItem.selected = YES;
+    //刷新高亮
+    [self.menuTableView reloadData];
+    //设置当前的lastSelectedIndexPath
+    self.lastSelectedIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
     
+    //回调
+    if ([self respondsToSelector:@selector(menuTableView:didSelectOptions:)])
+    {
+        [self menuTableView:self.menuTableView didSelectOptions:self.lastSelectedItem];
+    }
 }
 
 

@@ -13,6 +13,7 @@
 @property (assign , nonatomic) NSUInteger optionsId;    //选项id
 @property (copy , nonatomic) NSString *optionsName;     //选项名称
 @property (assign , nonatomic) BOOL showsIndicator;     //是否显示指示器
+@property (assign , nonatomic) BOOL selected;           //是否选中
 
 /**
  创建一个选项模型

@@ -10,6 +10,8 @@
 
 @interface CategoryOptionsCell ()
 @property (strong , nonatomic) UILabel *label;
+@property (strong , nonatomic) UIImageView *line;
+@property (strong , nonatomic) UIImageView *highlightedBar;
 
 @end
 
@@ -28,9 +30,23 @@
     {
         [self.contentView addSubview:self.label];
         self.label.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        //line
+        self.line = [[UIImageView alloc] initWithFrame:CGRectMake(0, self.bounds.size.height - .3, self.bounds.size.width, .3)];
+        self.line.backgroundColor = [[UIColor grayColor] colorWithAlphaComponent:.3];
+        [self addSubview:self.line];
+        //highlightedBar
+        [self addSubview:self.highlightedBar];
     }
     
     return self;
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    self.line.frame = CGRectMake(0, self.bounds.size.height - .3, self.bounds.size.width, .3);
+    self.highlightedBar.frame = CGRectMake(0, 0, 5, self.bounds.size.height);
 }
 
 - (UILabel *)label
@@ -45,22 +61,32 @@
     return _label;
 }
 
+- (UIImageView *)highlightedBar
+{
+    if (!_highlightedBar)
+    {
+        _highlightedBar = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 5, self.bounds.size.height)];
+        _highlightedBar.backgroundColor = [UIColor clearColor];
+    }
+    
+    return _highlightedBar;
+}
+
 - (void)setOptionsItem:(MenuOptionsItem *)optionsItem
 {
     _optionsItem = optionsItem;
     
     self.label.text = optionsItem.optionsName;
     self.accessoryType = optionsItem.showsIndicator? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
+    self.highlightedBar.backgroundColor = optionsItem.selected? self.hColor : [UIColor clearColor];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
     
+    
 }
-
-
-
 
 @end
 

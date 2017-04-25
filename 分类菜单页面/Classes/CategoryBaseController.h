@@ -7,8 +7,29 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MenuOptionsItem.h"
 
-@interface CategoryBaseController : UIViewController
+
+typedef NS_ENUM(NSUInteger, UITableViewTag)
+{
+    UITableViewTag_menu = 100,
+    UITableViewTag_content
+};
+
+
+@protocol MenuDelegate <NSObject>
+
+/**
+ 点击菜单的回调
+
+ @param tableView 列表视图
+ @param options 选中的选项
+ */
+- (void)menuTableView:(UITableView *)tableView didSelectOptions:(MenuOptionsItem *)options;
+
+@end
+
+@interface CategoryBaseController : UIViewController<UITableViewDelegate, UITableViewDataSource, MenuDelegate>
 
 
 
@@ -25,6 +46,13 @@
  @param list 列表数据，NSArray *
  */
 - (void)setMenuData:(NSArray *)list;
+
+/**
+ 设置选项选中的颜色
+
+ @param color color
+ */
+- (void)setOptionsHighlightedColor:(UIColor *)color;
 
 /**
  设置contentView
