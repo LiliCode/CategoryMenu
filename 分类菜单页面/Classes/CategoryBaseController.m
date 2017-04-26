@@ -44,6 +44,7 @@
         _menuTableView.tag = UITableViewTag_menu;
         _menuTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         _menuTableView.rowHeight = 50.0f;
+        _menuTableView.backgroundColor = [[UIColor grayColor] colorWithAlphaComponent:.5];
     }
     
     return _menuTableView;

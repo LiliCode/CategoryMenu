@@ -28,6 +28,7 @@
 {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])
     {
+        self.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:self.label];
         self.label.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         //line
